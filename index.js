@@ -13,3 +13,31 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 // middleware
 app.use(cors());
 app.use(express.json());
+
+console.log(uri);
+
+async function run() {
+    try {
+        await client.connect();
+        const taskCollection = client.db('todo-2').collection('tasks');
+
+        // post new task
+        app.post('/tasks', async (req, res) => {
+            const task = req.body;
+            const result = await taskCollection.insertOne(task);
+            res.send(result);
+        })
+    }
+
+    catch { }
+}
+
+run().catch(console.dir);
+
+app.get('/', (req, res) => {
+    res.send('Server is running for todo list');
+});
+
+app.listen(port, () => {
+    console.log('Server is running on port', port);
+});
